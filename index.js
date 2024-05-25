@@ -12,6 +12,7 @@ app.use(express.json());
 
 const mongoose = require("mongoose");
 const url = process.env.MONGO_URL;
+const port = process.env.PORT;
 mongoose
   .connect(url)
   .then(() => {
@@ -22,16 +23,30 @@ mongoose
   });
 
 const productsRouter = require("./routes/products-rout");
+const categoriesRouter = require("./routes/categories-rout");
 
 app.use("/api/products", productsRouter);
+app.use("/api/categories", categoriesRouter);
 
-app.all("*", (req, res) => {
-  return res.status(404).json({
+app.get("/", (req, res) => {
+  res.send(`
+  <h1 style="
+  text-align:center;
+  color:orange;
+  font:900 2rem Arial;
+  ">
+  my first api => { E-commerce Api }</h1>
+  `);
+});
+
+app.all("*", (req, res, next) => {
+  res.status(404).json({
     status: "Error",
     msg: "not found",
   });
+  next();
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("server runing on port 3000");
+app.listen(port || 3000, () => {
+  console.log(`server runing on port ${port}`);
 });
