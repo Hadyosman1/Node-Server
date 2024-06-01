@@ -61,7 +61,7 @@ const addProduct = async (req, res) => {
     console.log(data);
     res.status(201).json(newProduct);
   } catch (error) {
-    res.status(400).json({ msg: err.message });
+    res.status(400).json({ msg: error.message });
   }
 };
 
