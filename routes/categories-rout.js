@@ -6,9 +6,17 @@ const {
   deleteCategory,
   editCategory,
 } = require("../controllers/categories-controller");
+const verifyToken = require("../middlewares/verifyToken");
+const allowedTo = require("../middlewares/allowedTo");
 
-router.route("/").get(getAllCategories).post(addCategory);
+router
+  .route("/")
+  .get(getAllCategories)
+  .post(verifyToken, allowedTo("MANAGER", "ADMIN"), addCategory);
 
-router.route("/:id").delete(deleteCategory).put(editCategory);
+router
+  .route("/:id")
+  .delete(verifyToken, allowedTo("MANAGER", "ADMIN"), deleteCategory)
+  .put(verifyToken, allowedTo("MANAGER", "ADMIN"), editCategory);
 
 module.exports = router;

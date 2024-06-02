@@ -24,7 +24,7 @@ const getAllUsers = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  let { firstName, lastName, password, email } = req.body;
+  let { firstName, lastName, password, email, role } = req.body;
   try {
     const oldUser = await User.findOne({ email });
 
@@ -34,10 +34,10 @@ const register = async (req, res) => {
 
     password = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ firstName, lastName, password, email });
+    const newUser = new User({ firstName, lastName, password, email, role });
 
     const token = jwt.sign(
-      { email: newUser.email, id: newUser._id },
+      { email: newUser.email, id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "120d" }
     );
@@ -70,7 +70,7 @@ const logIn = async (req, res) => {
 
     if (user && matchedPass) {
       const token = jwt.sign(
-        { email: user.email, id: user._id },
+        { email: user.email, id: user._id, role: user.role },
         process.env.JWT_SECRET_KEY,
         { expiresIn: "120d" }
       );

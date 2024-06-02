@@ -29,6 +29,11 @@ const schema = new Schema({
   token: {
     type: String,
   },
+  role: {
+    type: String,
+    default: "USER",
+    enum: ["USER", "ADMIN", "MANAGER"],
+  },
 });
 
 module.exports = model("User", schema);
