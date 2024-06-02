@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { addProductValidator } = require("../middlewares/expressValidator");
 
 const {
   getAllProducts,
@@ -7,7 +8,6 @@ const {
   deleteProduct,
   updateProduct,
   addProduct,
-  addProductValidator,
 } = require("../controllers/products-controller");
 
 router.route("/").get(getAllProducts).post(addProductValidator, addProduct);

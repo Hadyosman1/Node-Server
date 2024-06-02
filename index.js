@@ -24,9 +24,11 @@ mongoose
 
 const productsRouter = require("./routes/products-rout");
 const categoriesRouter = require("./routes/categories-rout");
+const usersRouter = require("./routes/users-rout");
 
 app.use("/api/products", productsRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/users", usersRouter);
 
 app.get("/", (req, res) => {
   res.send(`
@@ -35,14 +37,15 @@ app.get("/", (req, res) => {
   color:orange;
   font:900 2rem Arial;
   ">
-  my first api => { E-commerce Api }</h1>
+  my first api => { E-commerce Api }
+  </h1>
   `);
 });
 
 app.all("*", (req, res, next) => {
   res.status(404).json({
     status: "Error",
-    msg: "not found",
+    msg: "Not Found",
   });
   next();
 });
