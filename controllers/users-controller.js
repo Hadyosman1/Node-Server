@@ -25,6 +25,9 @@ const getAllUsers = async (req, res) => {
 
 const register = async (req, res) => {
   let { firstName, lastName, password, email, role } = req.body;
+
+  const fileName = req.file?.filename;
+
   try {
     const oldUser = await User.findOne({ email });
 
@@ -34,12 +37,23 @@ const register = async (req, res) => {
 
     password = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ firstName, lastName, password, email, role });
+    const newUser = new User({
+      firstName,
+      lastName,
+      password,
+      email,
+      role,
+      avatar: fileName,
+    });
+
+    // if (!fileName) {
+    //   delete newUser.avatar;
+    // }
 
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "120d" }
+      { expiresIn: "120 days" }
     );
 
     newUser.token = token;
@@ -72,10 +86,15 @@ const logIn = async (req, res) => {
       const token = jwt.sign(
         { email: user.email, id: user._id, role: user.role },
         process.env.JWT_SECRET_KEY,
-        { expiresIn: "120d" }
+        { expiresIn: "120 days" }
       );
 
-      return res.status(200).json({ token });
+      const data = await User.findOneAndUpdate(
+        { email },
+        { $set: { token } },
+        { new: true }
+      );
+      return res.status(200).json(data);
     }
 
     return res.status(400).json({ msg: "wrong email or password" });
@@ -84,8 +103,49 @@ const logIn = async (req, res) => {
   }
 };
 
+const logOut = async (req, res) => {
+  try {
+    const data = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      { $unset: { token: /w+/g } },
+      { new: true }
+    );
+    res.status(201).json(data);
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+const editUser = async (req, res) => {
+  const fileName = req.file?.filename;
+
+  try {
+    const data = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      { $set: { ...req.body, avatar: fileName } },
+      { new: true }
+    );
+
+    res.status(201).json(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const data = await User.findByIdAndDelete(req.params.id);
+    res.status(201).json(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   register,
   logIn,
+  editUser,
+  deleteUser,
+  logOut,
 };

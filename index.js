@@ -1,18 +1,17 @@
 require("dotenv").config();
-
-const cors = require("cors");
-
-const express = require("express");
-
-const app = express();
-
-app.use(cors());
-
-app.use(express.json());
-
-const mongoose = require("mongoose");
 const url = process.env.MONGO_URL;
 const port = process.env.PORT;
+const cors = require("cors");
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const path = require("path");
+
+app.use(express.json());
+app.use(cors());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 mongoose
   .connect(url)
   .then(() => {

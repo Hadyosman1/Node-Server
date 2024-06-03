@@ -34,6 +34,10 @@ const schema = new Schema({
     default: "USER",
     enum: ["USER", "ADMIN", "MANAGER"],
   },
+  avatar: {
+    type: String,
+    default: "uploads/anonymous_user.webp",
+  },
 });
 
 module.exports = model("User", schema);
