@@ -29,7 +29,12 @@ const getSingleProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
+  const fileName = req.file?.filename;
+
   try {
+    if (fileName) {
+      req.body.image = fileName;
+    }
     const data = await Product.findByIdAndUpdate(
       req.params.id,
       {
@@ -45,12 +50,16 @@ const updateProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
     return res.status(400).json(errors.array());
   }
 
+  const fileName = req.file?.filename;
   try {
+    if (fileName) {
+      req.body.image = fileName;
+    }
+
     const newProduct = new Product(req.body);
     const data = await newProduct.save();
     res.status(201).json(data);

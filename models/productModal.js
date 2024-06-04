@@ -24,11 +24,9 @@ const schema = new mongoose.Schema({
   rating: {
     rate: {
       type: Number,
-      required: true,
     },
     count: {
       type: Number,
-      required: true,
     },
   },
 });

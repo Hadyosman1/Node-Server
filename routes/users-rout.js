@@ -11,7 +11,6 @@ const {
 } = require("../controllers/users-controller");
 
 const multer = require("multer");
-const allowedTo = require("../middlewares/allowedTo");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
