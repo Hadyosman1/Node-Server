@@ -35,7 +35,7 @@ router.route("/").get(verifyToken, getAllUsers);
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(logIn);
 
-router.route("/logout/:id").get(verifyToken, logOut);
+router.route("/logout/:id").post(verifyToken, logOut);
 
 router
   .route("/:id")

@@ -104,13 +104,23 @@ const logIn = async (req, res) => {
 };
 
 const logOut = async (req, res) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  const token = authHeader.split(" ")[1];
+
   try {
     const data = await User.findOneAndUpdate(
       { _id: req.params.id },
-      { $unset: { token: /w+/g } },
+      { $unset: { token } },
       { new: true }
     );
-    res.status(201).json(data);
+
+    if (data && !data.token) {
+      res
+        .status(201)
+        .json({ message: "user logged out successfully...", data });
+    }
+
+    return res.status(400).json({ msg: "Internal Server Error!" });
   } catch (error) {
     return res.status(400).json({ msg: error.message });
   }
