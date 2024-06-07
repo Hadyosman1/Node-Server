@@ -110,7 +110,7 @@ const logOut = async (req, res) => {
   try {
     const data = await User.findOneAndUpdate(
       { _id: req.params.id },
-      { $unset: { token } },
+      { $unset: { token: token } },
       { new: true }
     );
 
