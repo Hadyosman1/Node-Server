@@ -46,14 +46,10 @@ const register = async (req, res) => {
       avatar: fileName,
     });
 
-    // if (!fileName) {
-    //   delete newUser.avatar;
-    // }
-
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "120 days" }
+      { expiresIn: "100 days" }
     );
 
     newUser.token = token;
@@ -86,7 +82,7 @@ const logIn = async (req, res) => {
       const token = jwt.sign(
         { email: user.email, id: user._id, role: user.role },
         process.env.JWT_SECRET_KEY,
-        { expiresIn: "120 days" }
+        { expiresIn: "100 days" }
       );
 
       const data = await User.findOneAndUpdate(
@@ -106,16 +102,17 @@ const logIn = async (req, res) => {
 const logOut = async (req, res) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   const token = authHeader.split(" ")[1];
-
+  console.log(token);
   try {
+    console.log(req.currentUser);
     const data = await User.findOneAndUpdate(
-      { _id: req.params.id },
-      { $unset: { token: token } },
+      { _id: req.params.id, token },
+      { $unset: { token: /\.+/ } },
       { new: true }
     );
 
     if (data && !data.token) {
-      res
+      return res
         .status(201)
         .json({ message: "user logged out successfully...", data });
     }
