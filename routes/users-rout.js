@@ -3,6 +3,7 @@ const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
 const {
   getAllUsers,
+  getSingleUser,
   register,
   logIn,
   editUser,
@@ -39,6 +40,7 @@ router.route("/logout/:id").post(verifyToken, logOut);
 
 router
   .route("/:id")
+  .get(verifyToken, getSingleUser)
   .put(verifyToken, upload.single("avatar"), editUser)
   .delete(verifyToken, deleteUser);
 
