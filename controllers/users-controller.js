@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { firebaseStorage } = require("../config/firebase.conofig");
+const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 
 const getAllUsers = async (req, res) => {
   const limit = req.query.limit;
@@ -23,12 +25,34 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getSingleUser = async (req, res) => {
+  const id = req.params.id;
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const user = await User.findOne({ _id: id, token });
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
 const register = async (req, res) => {
   let { firstName, lastName, password, email, role } = req.body;
 
-  const fileName = req.file?.filename;
-
   try {
+    let publicUrl;
+    if (req.file) {
+      const storageRef = ref(
+        firebaseStorage,
+        `images/${Date.now()}-${req.file.originalname}`
+      );
+
+      await uploadBytes(storageRef, req.file.buffer);
+      publicUrl = await getDownloadURL(storageRef);
+    }
+
     const oldUser = await User.findOne({ email });
 
     if (oldUser) {
@@ -43,7 +67,7 @@ const register = async (req, res) => {
       password,
       email,
       role,
-      avatar: fileName,
+      avatar: publicUrl,
     });
 
     const token = jwt.sign(
@@ -102,9 +126,9 @@ const logIn = async (req, res) => {
 const logOut = async (req, res) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
   const token = authHeader.split(" ")[1];
-  console.log(token);
+
   try {
-    console.log(req.currentUser);
+    // console.log(req.currentUser);
     const data = await User.findOneAndUpdate(
       { _id: req.params.id, token },
       { $unset: { token: /\.+/ } },
@@ -124,12 +148,21 @@ const logOut = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-  const fileName = req.file?.filename;
-
   try {
+    let publicUrl;
+    if (req.file) {
+      const storageRef = ref(
+        firebaseStorage,
+        `images/${Date.now()}-${req.file.originalname}`
+      );
+
+      await uploadBytes(storageRef, req.file.buffer);
+      publicUrl = await getDownloadURL(storageRef);
+    }
+
     const data = await User.findOneAndUpdate(
       { _id: req.params.id },
-      { $set: { ...req.body, avatar: fileName } },
+      { $set: { ...req.body, avatar: publicUrl } },
       { new: true }
     );
 
@@ -150,6 +183,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  getSingleUser,
   register,
   logIn,
   editUser,

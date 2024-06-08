@@ -36,7 +36,8 @@ const schema = new Schema({
   },
   avatar: {
     type: String,
-    default: "uploads/anonymous_user.webp",
+    default:
+      "https://firebasestorage.googleapis.com/v0/b/react-e-commerce-55519.appspot.com/o/images%2Fanonymous_user.webp?alt=media&token=f3e71284-9fa5-4529-9ca9-66f09331f1ea",
   },
 });
 

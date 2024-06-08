@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const Product = require("../models/productModal.js");
+const { firebaseStorage } = require("../config/firebase.conofig");
+const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 
 const getAllProducts = async (req, res) => {
   const limit = req.query.limit;
@@ -29,12 +31,18 @@ const getSingleProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const fileName = req.file?.filename;
-
   try {
-    if (fileName) {
-      req.body.image = fileName;
+    if (req.file) {
+      const storageRef = ref(
+        firebaseStorage,
+        `images/${Date.now()}-${req.file.originalname}`
+      );
+
+      await uploadBytes(storageRef, req.file.buffer);
+      const publicUrl = await getDownloadURL(storageRef);
+      req.body.image = publicUrl;
     }
+
     const data = await Product.findByIdAndUpdate(
       req.params.id,
       {
@@ -54,10 +62,16 @@ const addProduct = async (req, res) => {
     return res.status(400).json(errors.array());
   }
 
-  const fileName = req.file?.filename;
   try {
-    if (fileName) {
-      req.body.image = fileName;
+    if (req.file) {
+      const storageRef = ref(
+        firebaseStorage,
+        `images/${Date.now()}-${req.file.originalname}`
+      );
+
+      await uploadBytes(storageRef, req.file.buffer);
+      const publicUrl = await getDownloadURL(storageRef);
+      req.body.image = publicUrl;
     }
 
     const newProduct = new Product(req.body);
