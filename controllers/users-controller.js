@@ -171,6 +171,10 @@ const editUser = async (req, res) => {
       return res.status(400).json({ msg: "you can't edit your email !" });
     }
 
+    if (req.body.password) {
+      req.body.password = await bcrypt.hash(password, 10);
+    }
+
     const data = await User.findOneAndUpdate(
       { _id: req.params.id },
       { $set: { ...req.body, avatar: publicUrl } },
