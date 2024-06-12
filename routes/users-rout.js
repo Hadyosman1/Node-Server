@@ -23,7 +23,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter,
-  limits: { fileSize: 3 * 1024 * 1024 }/* 3 MB */ ,
+  limits: { fileSize: 3 * 1024 * 1024 }, // 3 MB
 });
 
 router.route("/").get(verifyToken, getAllUsers);

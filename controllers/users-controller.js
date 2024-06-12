@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { firebaseStorage } = require("../config/firebase.conofig");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
+const deletePicFromStorage = require("../utils/deletePicFromStorage");
 
 const getAllUsers = async (req, res) => {
   const limit = req.query.limit;
@@ -151,6 +152,12 @@ const editUser = async (req, res) => {
   try {
     let publicUrl;
     if (req.file) {
+      // delete picture from firebase storage
+      const user = await User.findById(req.params.id);
+      if (user) {
+        deletePicFromStorage(user.avatar);
+      }
+
       const storageRef = ref(
         firebaseStorage,
         `images/${Date.now()}-${req.file.originalname}`
@@ -158,6 +165,10 @@ const editUser = async (req, res) => {
 
       await uploadBytes(storageRef, req.file.buffer);
       publicUrl = await getDownloadURL(storageRef);
+    }
+
+    if (req.body.email) {
+      return res.status(400).json({ msg: "you can't edit your email !" });
     }
 
     const data = await User.findOneAndUpdate(
@@ -174,6 +185,12 @@ const editUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
+    // delete picture from firebase storage
+    const user = await User.findById(req.params.id);
+    if (user) {
+      deletePicFromStorage(user.avatar);
+    }
+
     const data = await User.findByIdAndDelete(req.params.id);
     res.status(201).json(data);
   } catch (error) {

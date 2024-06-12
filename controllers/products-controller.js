@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Product = require("../models/productModal.js");
 const { firebaseStorage } = require("../config/firebase.conofig");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
+const deletePicFromStorage = require("../utils/deletePicFromStorage.js");
 
 const getAllProducts = async (req, res) => {
   const limit = req.query.limit;
@@ -33,6 +34,12 @@ const getSingleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     if (req.file) {
+      // delete picture from firebase storage
+      const product = await Product.findById(req.params.id);
+      if (product) {
+        deletePicFromStorage(product.image);
+      }
+
       const storageRef = ref(
         firebaseStorage,
         `images/${Date.now()}-${req.file.originalname}`
@@ -84,6 +91,12 @@ const addProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   try {
+    // delete picture from firebase storage
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      deletePicFromStorage(product.image);
+    }
+
     const data = await Product.findByIdAndDelete(req.params.id);
     res.status(202).json(data);
   } catch (error) {
