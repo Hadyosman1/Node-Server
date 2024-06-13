@@ -151,9 +151,10 @@ const logOut = async (req, res) => {
 const editUser = async (req, res) => {
   try {
     let publicUrl;
+
+    const user = await User.findById(req.params.id);
     if (req.file) {
       // delete picture from firebase storage
-      const user = await User.findById(req.params.id);
       if (user) {
         deletePicFromStorage(user.avatar);
       }
@@ -171,7 +172,15 @@ const editUser = async (req, res) => {
       return res.status(400).json({ msg: "you can't edit your email !" });
     }
 
-    if (req.body.password) {
+    if (req.body.password && req.body.oldPassword) {
+      const matchedPass = await bcrypt.compare(
+        req.body.oldPassword,
+        user.password
+      );
+      if (!matchedPass) {
+        return res.status(400).json({ msg: "Wrong Old Password !" });
+      }
+
       req.body.password = await bcrypt.hash(password, 10);
     }
 
