@@ -129,10 +129,9 @@ const logOut = async (req, res) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    // console.log(req.currentUser);
     const data = await User.findOneAndUpdate(
-      { _id: req.params.id, token },
-      { $unset: { token: /\.+/ } },
+      { _id: req.params.id },
+      { $set: { token: "" } },
       { new: true }
     );
 
@@ -144,6 +143,7 @@ const logOut = async (req, res) => {
 
     return res.status(400).json({ msg: "Internal Server Error!" });
   } catch (error) {
+    console.log(error);
     return res.status(400).json({ msg: error.message });
   }
 };
