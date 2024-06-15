@@ -125,13 +125,14 @@ const logIn = async (req, res) => {
 };
 
 const logOut = async (req, res) => {
-  const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token = authHeader.split(" ")[1];
-
   try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const token = authHeader.split(" ")[1];
+    const id = req.params.id;
+
     const data = await User.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: { token: "" } },
+      { _id: id, token },
+      { $unset: { token: "" } },
       { new: true }
     );
 
@@ -177,11 +178,12 @@ const editUser = async (req, res) => {
         req.body.oldPassword,
         user.password
       );
+
       if (!matchedPass) {
         return res.status(400).json({ msg: "Wrong Old Password !" });
       }
 
-      req.body.password = await bcrypt.hash(password, 10);
+      req.body.password = await bcrypt.hash(req.body.password, 10);
     }
 
     const data = await User.findOneAndUpdate(

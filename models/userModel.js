@@ -28,6 +28,9 @@ const schema = new Schema({
   },
   token: {
     type: String,
+    unique: false,
+    sparse: true,
+    required:false
   },
   role: {
     type: String,
