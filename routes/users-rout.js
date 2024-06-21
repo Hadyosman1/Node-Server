@@ -5,7 +5,6 @@ const {
   getAllUsers,
   getSingleUser,
   getSingleUserByEmail,
-  getSingleUserByEmail,
   register,
   logIn,
   editUser,
