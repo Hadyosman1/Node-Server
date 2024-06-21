@@ -61,7 +61,7 @@ const resetPassword = async (req, res) => {
 
 const getSingleUserByEmail = async (req, res) => {
   try {
-    const email = req.body.email;
+    const email = req.params.email;
     const user = await User.findOne({ email }, { __v: false });
 
     if (user) {

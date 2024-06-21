@@ -33,7 +33,7 @@ router.route("/").get(verifyToken, getAllUsers);
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(logIn);
 
-router.route("/get_user_by_email").get(getSingleUserByEmail);
+router.route("/get_user_by_email/:email").get(getSingleUserByEmail);
 router.route("/logout/:id").post(logOut);
 router.route("/reset_password").post(resetPassword);
 
