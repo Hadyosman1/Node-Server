@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getAllUsers,
   getSingleUser,
+  getSingleUserByEmail,
   register,
   logIn,
   editUser,
@@ -30,12 +31,13 @@ router.route("/").get(verifyToken, getAllUsers);
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(logIn);
 
-router.route("/logout/:id").post(verifyToken, logOut);
+router.route("/logout/:id").post(logOut);
+router.route("/forgetpassword").get(getSingleUserByEmail);
 
 router
   .route("/:id")
-  .get(verifyToken, getSingleUser)
-  .put(verifyToken, upload.single("avatar"), editUser)
+  .get(getSingleUser)
+  .put(upload.single("avatar"), editUser)
   .delete(verifyToken, deleteUser);
 
 module.exports = router;
