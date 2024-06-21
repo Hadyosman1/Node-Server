@@ -36,46 +36,6 @@ const getSingleUser = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
-  try {
-    const { email, _id, password } = req.body;
-
-    const newPassword = await bcrypt.hash(password, 10);
-    const user = await User.findOneAndUpdate(
-      { email, _id },
-      { $set: { password: newPassword } },
-      { new: true }
-    );
-
-    if (user) {
-      return res
-        .status(200)
-        .json({ msg: "Password Updated Successfully...", user });
-    }
-
-    return res.status(400).json({ msg: "Internal Server Error!" });
-  } catch (error) {
-    return res.status(400).json({ msg: error.message });
-  }
-};
-
-const getSingleUserByEmail = async (req, res) => {
-  try {
-    const email = req.body.email;
-    const user = await User.findOne({ email }, { __v: false });
-
-    if (user) {
-      return res.status(200).json(user);
-    }
-
-    return res
-      .status(400)
-      .json({ msg: "There is no user have this email...!" });
-  } catch (error) {
-    return res.status(400).json({ msg: error.message });
-  }
-};
-
 const register = async (req, res) => {
   let { firstName, lastName, password, email, role } = req.body;
 

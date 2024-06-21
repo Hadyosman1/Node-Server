@@ -5,6 +5,7 @@ const {
   getAllUsers,
   getSingleUser,
   getSingleUserByEmail,
+  getSingleUserByEmail,
   register,
   logIn,
   editUser,
@@ -38,6 +39,8 @@ router.route("/reset_password").post(resetPassword);
 
 router
   .route("/:id")
+  .get(getSingleUser)
+  .put(upload.single("avatar"), editUser)
   .get(getSingleUser)
   .put(upload.single("avatar"), editUser)
   .delete(verifyToken, deleteUser);
