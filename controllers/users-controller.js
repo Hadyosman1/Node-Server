@@ -28,12 +28,49 @@ const getAllUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   const id = req.params.id;
-  const authHeader = req.headers.authorization || req.headers.Authorization;
-  const token = authHeader.split(" ")[1];
-
   try {
-    const user = await User.findOne({ _id: id, token });
+    const user = await User.findOne({ _id: id });
     return res.status(200).json(user);
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, _id, password } = req.body;
+
+    const newPassword = await bcrypt.hash(password, 10);
+    const user = await User.findOneAndUpdate(
+      { email, _id },
+      { $set: { password: newPassword } },
+      { new: true }
+    );
+
+    if (user) {
+      return res
+        .status(200)
+        .json({ msg: "Password Updated Successfully...", user });
+    }
+
+    return res.status(400).json({ msg: "Internal Server Error!" });
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+const getSingleUserByEmail = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const user = await User.findOne({ email }, { __v: false });
+
+    if (user) {
+      return res.status(200).json(user);
+    }
+
+    return res
+      .status(400)
+      .json({ msg: "There is no user have this email...!" });
   } catch (error) {
     return res.status(400).json({ msg: error.message });
   }
@@ -130,21 +167,16 @@ const logOut = async (req, res) => {
     const token = authHeader.split(" ")[1];
     const id = req.params.id;
 
-    const data = await User.findOneAndUpdate(
-      { _id: id, token },
-      { $unset: { token: "" } },
-      { new: true }
-    );
+    const data = await User.findOne({ _id: id, token });
 
-    if (data && !data.token) {
+    if (data) {
       return res
         .status(201)
-        .json({ message: "user logged out successfully...", data });
+        .json({ message: "user logged out successfully..." });
     }
 
     return res.status(400).json({ msg: "Internal Server Error!" });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({ msg: error.message });
   }
 };
@@ -216,9 +248,11 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getAllUsers,
   getSingleUser,
+  getSingleUserByEmail,
   register,
   logIn,
   editUser,
+  resetPassword,
   deleteUser,
   logOut,
 };
