@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+const { User, roles } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { firebaseStorage } = require("../config/firebase.conofig");
@@ -31,6 +31,14 @@ const getSingleUser = async (req, res) => {
   try {
     const user = await User.findOne({ _id: id });
     return res.status(200).json(user);
+  } catch (error) {
+    return res.status(400).json({ msg: error.message });
+  }
+};
+
+const getRoles = async (req, res) => {
+  try {
+    res.status(200).json(roles);
   } catch (error) {
     return res.status(400).json({ msg: error.message });
   }
@@ -248,6 +256,7 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getAllUsers,
   getSingleUser,
+  getRoles,
   getSingleUserByEmail,
   register,
   logIn,

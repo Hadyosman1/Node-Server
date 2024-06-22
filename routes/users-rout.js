@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getAllUsers,
   getSingleUser,
+  getRoles,
   getSingleUserByEmail,
   register,
   logIn,
@@ -29,6 +30,7 @@ const upload = multer({
 });
 
 router.route("/").get(verifyToken, getAllUsers);
+router.route("/roles").get(verifyToken, getRoles);
 router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(logIn);
 

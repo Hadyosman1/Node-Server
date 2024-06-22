@@ -2,6 +2,8 @@ const { Schema, model } = require("mongoose");
 
 const validator = require("validator");
 
+const rolesEnum = ["USER", "ADMIN", "MANAGER"];
+
 const schema = new Schema({
   firstName: {
     type: String,
@@ -30,12 +32,12 @@ const schema = new Schema({
     type: String,
     unique: false,
     sparse: true,
-    required:false
+    required: false,
   },
   role: {
     type: String,
     default: "USER",
-    enum: ["USER", "ADMIN", "MANAGER"],
+    enum: rolesEnum,
   },
   avatar: {
     type: String,
@@ -44,4 +46,4 @@ const schema = new Schema({
   },
 });
 
-module.exports = model("User", schema);
+module.exports = { User: model("User", schema), roles: rolesEnum };
