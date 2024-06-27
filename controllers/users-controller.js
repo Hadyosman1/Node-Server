@@ -171,11 +171,9 @@ const logIn = async (req, res) => {
 
 const logOut = async (req, res) => {
   try {
-    const authHeader = req.headers.authorization || req.headers.Authorization;
-    const token = authHeader.split(" ")[1];
     const id = req.params.id;
 
-    const data = await User.findOne({ _id: id, token });
+    const data = await User.findOne({ _id: id });
 
     if (data) {
       return res

@@ -43,7 +43,6 @@ router
   .get(getSingleUser)
   .put(upload.single("avatar"), editUser)
   .get(getSingleUser)
-  .put(upload.single("avatar"), editUser)
   .delete(verifyToken, deleteUser);
 
 module.exports = router;
