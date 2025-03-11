@@ -38,7 +38,10 @@ const getSingleProduct = async (req, res) => {
 
 const getProductsCount = async (req, res) => {
   try {
-    const productsCount = await Product.countDocuments();
+    const filterByCategory = req.query.category;
+    const productsCount = await Product.countDocuments({
+      ...(filterByCategory ? { category: filterByCategory } : {}),
+    });
     res.status(200).json({ count: productsCount });
   } catch (err) {
     console.error(err);

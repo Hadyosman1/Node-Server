@@ -18,7 +18,12 @@ const addCategory = async (req, res) => {
       throw new Error("category already exists!");
     }
 
-    const category = new Category(req.body);
+    const categoryName = req.body.name.trim();
+
+    const category = new Category({
+      name: `${categoryName[0].toUpperCase()}${categoryName.slice(1)}`,
+    });
+
     await category.save();
     res.status(201).json(category);
   } catch (err) {
