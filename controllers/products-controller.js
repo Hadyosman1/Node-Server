@@ -7,14 +7,19 @@ const deletePicFromStorage = require("../utils/deletePicFromStorage.js");
 const getAllProducts = async (req, res) => {
   const limit = req.query.limit;
   const page = req.query.page;
+  const filterByCategory = req.query.category
+    ? { category: req.query.category }
+    : {};
   const skip = (page - 1) * limit;
 
   try {
     let products;
     if (limit || page) {
-      products = await Product.find({}, { __v: false }).limit(limit).skip(skip);
+      products = await Product.find({ ...filterByCategory }, { __v: false })
+        .limit(limit)
+        .skip(skip);
     } else {
-      products = await Product.find({}, { __v: false });
+      products = await Product.find({ ...filterByCategory }, { __v: false });
     }
     res.status(200).json(products);
   } catch (error) {
@@ -28,6 +33,16 @@ const getSingleProduct = async (req, res) => {
     res.status(200).json(data);
   } catch (error) {
     res.status(400).json({ msg: error.message });
+  }
+};
+
+const getProductsCount = async (req, res) => {
+  try {
+    const productsCount = await Product.countDocuments();
+    res.status(200).json({ count: productsCount });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ msg: err.message });
   }
 };
 
@@ -107,6 +122,7 @@ const deleteProduct = async (req, res) => {
 module.exports = {
   getAllProducts,
   getSingleProduct,
+  getProductsCount,
   deleteProduct,
   updateProduct,
   addProduct,

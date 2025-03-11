@@ -8,10 +8,11 @@ const {
   deleteProduct,
   updateProduct,
   addProduct,
+  getProductsCount,
 } = require("../controllers/products-controller");
 const verifyToken = require("../middlewares/verifyToken");
 const allowedTo = require("../middlewares/allowedTo");
-const upload = require("../middlewares/multer")
+const upload = require("../middlewares/multer");
 
 router
   .route("/")
@@ -23,6 +24,8 @@ router
     addProductValidator,
     addProduct
   );
+
+router.route("/count").get(getProductsCount);
 
 router
   .route("/:id")
